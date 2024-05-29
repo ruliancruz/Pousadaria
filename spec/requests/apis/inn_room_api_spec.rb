@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 describe 'Inn Room API' do
-  context 'GET /api/v1/inn_rooms' do
+  context 'GET /api/v1/inn_rooms/1' do
     it 'successfully' do
       inn_owner = InnOwner
         .create! first_name: 'Joao',
@@ -35,14 +35,19 @@ describe 'Inn Room API' do
 
       json = JSON.parse response.body
 
-      puts json
+      expect(json['name']).to eq 'Quarto com Varanda'
+      expect(json['size']).to eq 35
+      expect(json['guest_limit']).to eq 3
+      expect(json['daily_rate_cents']).to eq 200_00
 
-      expect(json[:name]).to eq 'Pousada do Almeidinha'
-      expect(json[:size]).to eq 35
-      expect(json[:guest_limit]).to eq 3
-      expect(json[:daily_rate_cents]).to eq 200_00
       expect(json.keys).not_to include 'created_at'
       expect(json.keys).not_to include 'updated_at'
+    end
+
+    it "fails if the inn room isn't found" do
+      get "/api/v1/inn_rooms/999999"
+
+      expect(response.status).to eq 404
     end
   end
 end
